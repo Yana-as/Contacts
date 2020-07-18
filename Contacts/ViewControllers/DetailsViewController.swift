@@ -10,10 +10,14 @@ import UIKit
 
 class DetailsViewController: UITableViewController {
     
+    @IBOutlet weak var photoView: UIView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         tableView.tableFooterView = UIView()
+        photoView.layer.cornerRadius = photoView.frame.width/2
+        photoView.clipsToBounds = true
     }
 
     // MARK: - Table view data source
