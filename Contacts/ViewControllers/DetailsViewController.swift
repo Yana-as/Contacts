@@ -11,13 +11,17 @@ import UIKit
 class DetailsViewController: UITableViewController {
     
     @IBOutlet weak var photoView: UIView!
+    @IBOutlet weak var contactName: UILabel!
+    @IBOutlet weak var contactPhoneNumber: UILabel!
+    @IBOutlet weak var contactEmail: UILabel!
+    @IBOutlet weak var contactImage: UIImageView!
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tableView.tableFooterView = UIView()
-        photoView.layer.cornerRadius = photoView.frame.width/2
-        photoView.clipsToBounds = true
+        
     }
 
     // MARK: - Table view data source
@@ -36,7 +40,7 @@ class DetailsViewController: UITableViewController {
         return cell
     }
     */
-
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

@@ -12,13 +12,14 @@ class NewContactViewController: UITableViewController {
     
     var newContact = Contact()
     var imageIsChanged = false
+    var currentContact: Contact?
     
     @IBOutlet weak var contactPhoto: UIImageView!
-    @IBOutlet weak var photoView: UIView!
     @IBOutlet weak var contactName: UITextField!
     @IBOutlet weak var contactPhoneNumber: UITextField!
     @IBOutlet weak var contactEmail: UITextField!
     @IBOutlet weak var saveButton: UIBarButtonItem!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,8 +28,8 @@ class NewContactViewController: UITableViewController {
         tableView.tableFooterView = UIView()
         
         //Creation round photo displaying
-        photoView.layer.cornerRadius = photoView.frame.width/2
-        photoView.clipsToBounds = true
+        contactPhoto.layer.cornerRadius = contactPhoto.frame.width/2
+        contactPhoto.clipsToBounds = true
         
         // Enable save button without require textfields
         saveButton.isEnabled = false
@@ -36,6 +37,12 @@ class NewContactViewController: UITableViewController {
         // Checkind completing required textfields
         contactName.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
         contactPhoneNumber.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
+        
+        // TODO: -Add custom image to the detail screen
+        
+        contactName.text = currentContact?.name
+        contactPhoneNumber.text = currentContact?.phoneNumber
+        contactEmail.text = currentContact?.email
     }
 
     // MARK: - Table view data source
@@ -43,6 +50,23 @@ class NewContactViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return 4
+    }
+    
+    func saveNewContact() {
+        
+        var image: UIImage?
+        
+        if imageIsChanged {
+            image = contactPhoto.image
+        } else {
+            image = UIImage(systemName: "person.circle.fill")?.withTintColor(UIColor(red: CGFloat(174)/CGFloat(255), green: CGFloat(187)/CGFloat(255), blue: CGFloat(227)/CGFloat(255), alpha: 1.0))
+        }
+        
+        let imageData = image?.pngData()
+        
+        let newContact = Contact(name: contactName.text!, phoneNumber: contactPhoneNumber.text!, email: contactEmail.text!, imageData: imageData)
+        
+        StorageManager.saveObject(newContact)
     }
     
     // Choosing method of adding new photo

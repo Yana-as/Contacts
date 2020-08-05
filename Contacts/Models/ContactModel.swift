@@ -15,7 +15,7 @@ class Contact: Object {
     @objc dynamic var email: String?
     @objc dynamic var imageData: Data?
     
-    convenience init (name: String, phoneNumber: String, email: String?, image: Data?) {
+    convenience init (name: String, phoneNumber: String, email: String?, imageData: Data?) {
         
         self.init()
         self.name = name

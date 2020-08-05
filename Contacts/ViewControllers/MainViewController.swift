@@ -17,6 +17,8 @@ class MainViewController: UITableViewController {
         super.viewDidLoad()
         
         contacts = realm.objects(Contact.self)
+        
+        tableView.tableFooterView = UIView()
     }
 
     // MARK: - Table view data source
@@ -25,21 +27,35 @@ class MainViewController: UITableViewController {
         
         return contacts.isEmpty ? 0 : contacts.count
     }
-
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CustomContactTableViewCell
 
         let contact = contacts[indexPath.row]
-
+        
         cell.contactNameLabel.text = contact.name
         cell.phoneNumberLabel.text = contact.phoneNumber
-
+        
         cell.contactImage.image = UIImage(data: contact.imageData!)
         cell.contactImage.layer.cornerRadius = cell.contactImage.frame.width/2
         cell.contactImage.clipsToBounds = true
 
         return cell
     }
+    
+    @IBAction func unwindSegue(_ segue: UIStoryboardSegue){
+        
+        guard let newContactVC = segue.source as? NewContactViewController else { return }
+        
+        newContactVC.saveNewContact()
+        tableView.reloadData()
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        return 80
+    }
+    
     // MARK: -Table view delegate
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
@@ -52,5 +68,15 @@ class MainViewController: UITableViewController {
         let swipeAction = UISwipeActionsConfiguration(actions: [deleteAction])
         
         return swipeAction
+    }
+    
+    // MARK: - Navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ShowDetails"{
+            guard let indexPath = tableView.indexPathForSelectedRow else { return }
+            let contact = contacts[indexPath.row]
+            let newContactVC = segue.destination as! NewContactViewController
+            newContactVC.currentContact = contact
+        }
     }
 }
