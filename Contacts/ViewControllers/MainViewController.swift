@@ -37,6 +37,7 @@ class MainViewController: UITableViewController {
         cell.phoneNumberLabel.text = contact.phoneNumber
         
         cell.contactImage.image = UIImage(data: contact.imageData!)
+        cell.contactImage.contentMode = .scaleAspectFill
         cell.contactImage.layer.cornerRadius = cell.contactImage.frame.width/2
         cell.contactImage.clipsToBounds = true
 
@@ -47,7 +48,7 @@ class MainViewController: UITableViewController {
         
         guard let newContactVC = segue.source as? NewContactViewController else { return }
         
-        newContactVC.saveNewContact()
+        newContactVC.saveContact()
         tableView.reloadData()
     }
     

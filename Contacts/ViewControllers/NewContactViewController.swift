@@ -38,11 +38,7 @@ class NewContactViewController: UITableViewController {
         contactName.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
         contactPhoneNumber.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
         
-        // TODO: -Add custom image to the detail screen
-        
-        contactName.text = currentContact?.name
-        contactPhoneNumber.text = currentContact?.phoneNumber
-        contactEmail.text = currentContact?.email
+        setupEditScreen()
     }
 
     // MARK: - Table view data source
@@ -52,7 +48,7 @@ class NewContactViewController: UITableViewController {
         return 4
     }
     
-    func saveNewContact() {
+    func saveContact() {
         
         var image: UIImage?
         
@@ -66,7 +62,40 @@ class NewContactViewController: UITableViewController {
         
         let newContact = Contact(name: contactName.text!, phoneNumber: contactPhoneNumber.text!, email: contactEmail.text!, imageData: imageData)
         
-        StorageManager.saveObject(newContact)
+        if currentContact != nil {
+            try! realm.write {
+                currentContact?.name = newContact.name
+                currentContact?.phoneNumber = newContact.phoneNumber
+                currentContact?.email = newContact.email
+                currentContact?.imageData = newContact.imageData
+            }
+        } else {
+         
+            StorageManager.saveObject(newContact)
+        }
+    }
+    
+    private func setupEditScreen() {
+        if currentContact != nil {
+            
+            guard let data = currentContact?.imageData, let image = UIImage(data: data) else { return }
+            imageIsChanged = true
+            
+            contactPhoto.image = image
+            contactPhoto.contentMode = .scaleAspectFill
+            contactName.text = currentContact?.name
+            contactPhoneNumber.text = currentContact?.phoneNumber
+            contactEmail.text = currentContact?.email
+        }
+    }
+    
+    private func setupNavigationBar() {
+        
+        saveButton.isEnabled = true
+        if let topItem = navigationController?.navigationBar.topItem {
+            topItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        }
+        
     }
     
     // Choosing method of adding new photo
