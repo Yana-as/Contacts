@@ -13,10 +13,12 @@ class MainViewController: UITableViewController {
     
     var contacts: Results<Contact>!
 
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        contacts = realm.objects(Contact.self)
+        contacts = realm.objects(Contact.self).sorted(byKeyPath: "name")
         
         tableView.tableFooterView = UIView()
     }
