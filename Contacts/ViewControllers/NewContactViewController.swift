@@ -55,7 +55,7 @@ class NewContactViewController: UITableViewController {
         if imageIsChanged {
             image = contactPhoto.image
         } else {
-            image = UIImage(systemName: "person.circle.fill")?.withTintColor(UIColor(red: CGFloat(174)/CGFloat(255), green: CGFloat(187)/CGFloat(255), blue: CGFloat(227)/CGFloat(255), alpha: 1.0))
+            image = UIImage(named: "profile")?.withTintColor(UIColor(red: CGFloat(174)/CGFloat(255), green: CGFloat(187)/CGFloat(255), blue: CGFloat(227)/CGFloat(255), alpha: 1.0))
         }
         
         let imageData = image?.pngData()
@@ -101,24 +101,17 @@ class NewContactViewController: UITableViewController {
     // Choosing method of adding new photo
     @IBAction func addNewPhoto(_ sender: UIButton) {
         
-        let cameraIcon = #imageLiteral(resourceName: "camera")
-        let photoIcon = #imageLiteral(resourceName: "photo")
-        
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
         let camera = UIAlertAction(title: "Camera", style: .default) { _ in
             
             self.chooseImagePicker(source: .camera)
         }
-        camera.setValue(cameraIcon, forKey: "image")
-        camera.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
         
         let photo = UIAlertAction(title: "Photo", style: .default) { _ in
             
             self.chooseImagePicker(source: .photoLibrary)
         }
-        photo.setValue(photoIcon, forKey: "image")
-        photo.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel)
         
@@ -147,7 +140,7 @@ extension NewContactViewController: UIImagePickerControllerDelegate, UINavigatio
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         contactPhoto.image = info[.editedImage] as? UIImage
-        contactPhoto.contentMode = .scaleAspectFill
+        contactPhoto.contentMode = .scaleAspectFit
         contactPhoto.clipsToBounds = true
         
         imageIsChanged = true
