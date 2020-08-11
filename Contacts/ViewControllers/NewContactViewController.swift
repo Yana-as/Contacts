@@ -42,10 +42,15 @@ class NewContactViewController: UITableViewController {
     }
 
     // MARK: - Table view data source
-
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return 4
+    }
+    
+    // MARK: Table view delegate
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        view.endEditing(true)
     }
     
     func saveContact() {
@@ -76,6 +81,8 @@ class NewContactViewController: UITableViewController {
     }
     
     private func setupEditScreen() {
+        
+        saveButton.isEnabled = true
         if currentContact != nil {
             
             guard let data = currentContact?.imageData, let image = UIImage(data: data) else { return }
@@ -154,7 +161,6 @@ extension NewContactViewController: UITextFieldDelegate{
     
     // Hiding keyboard to tap on button Done
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        
         textField.resignFirstResponder()
         return true
     }
