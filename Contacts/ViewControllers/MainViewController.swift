@@ -11,8 +11,19 @@ import RealmSwift
 
 class MainViewController: UITableViewController {
     
-    var contacts: Results<Contact>!
+    private let searchController = UISearchController(searchResultsController: nil)
+    private var contacts: Results<Contact>!
+    private var filteredContacts: Results<Contact>!
+    private var searchBarIsEmpty: Bool {
 
+        guard let text = searchController.searchBar.text else { return false }
+        return text.isEmpty
+    }
+    private var isFiltering: Bool {
+        
+        return searchController.isActive && !searchBarIsEmpty
+    }
+    
     @IBOutlet weak var searchBar: UISearchBar!
     
     override func viewDidLoad() {
@@ -21,19 +32,37 @@ class MainViewController: UITableViewController {
         contacts = realm.objects(Contact.self).sorted(byKeyPath: "name")
         
         tableView.tableFooterView = UIView()
+        
+        // Setup the search controller
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
     }
 
     // MARK: - Table view data source
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
+        if isFiltering {
+            return filteredContacts.count
+        }
         return contacts.isEmpty ? 0 : contacts.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CustomContactTableViewCell
-
-        let contact = contacts[indexPath.row]
+        
+        var contact = Contact()
+        
+        if isFiltering {
+            
+            contact = filteredContacts[indexPath.row]
+        } else {
+            
+            contact = contacts[indexPath.row]
+        }
         
         cell.contactNameLabel.text = contact.name
         cell.phoneNumberLabel.text = contact.phoneNumber
@@ -77,9 +106,28 @@ class MainViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ShowDetails"{
             guard let indexPath = tableView.indexPathForSelectedRow else { return }
-            let contact = contacts[indexPath.row]
+            let contact: Contact
+            if isFiltering {
+                contact = filteredContacts[indexPath.row]
+            } else {
+                contact = contacts[indexPath.row]
+            }
             let newContactVC = segue.destination as! NewContactViewController
             newContactVC.currentContact = contact
         }
+    }
+}
+
+extension MainViewController: UISearchResultsUpdating {
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        filterContentForSearchText(searchController.searchBar.text!)
+    }
+    
+    private func filterContentForSearchText(_ searchText: String) {
+        
+        filteredContacts = contacts.filter("name CONTAINS[c] %@", searchText)
+        
+        tableView.reloadData()
     }
 }
